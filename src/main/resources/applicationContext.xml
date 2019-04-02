@@ -16,44 +16,54 @@
        http://www.springframework.org/schema/tx
        http://www.springframework.org/schema/tx/spring-tx.xsd">
 
+    <!-- 指定数据源配置文件 -->
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:db-config.properties</value>
+            </list>
+        </property>
+    </bean>
+
     <!-- annotation-config 是用于激活那些已经在spring容器里注册过的bean（@Autowired、@PersistenceContext、@Required、@Resource、@ PostConstruct、@ PreDestroy）-->
     <!--除了annotation-config功能外，还具有自动将带有@component,@service,@Repository等注解的对象注册到spring容器中的功能-->
-    <context:component-scan base-package="com.ljw.springmvc"/>
+    <context:component-scan base-package="com.ljw.springmvc">
+        <!--将Controller注解给去掉-->
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
 
-    <!--自动注册DefaultAnnotationHandlerMapping与AnnotationMethodHandlerAdapter 两个bean,是spring MVC为@Controllers分发请求所必须的-->
-    <!--数据绑定支持，@NumberFormatannotation支持，@DateTimeFormat支持，@Valid支持，读写XML的支持（JAXB），读写JSON的支持（Jackson）-->
-    <mvc:annotation-driven/>
-
-    <!-- 注解aop配置 -->
-    <aop:aspectj-autoproxy />
-
-    <!-- 指定数据源配置文件 -->
-    <context:property-placeholder location="classpath:db-config.properties" />
-
-    <!--数据源-->
-    <bean name="datasource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
-        <property name="driverClass" value="${db.driverClassName}"/>
+    <!--配置数据源 这里是使用的是c3p0连接池-->
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+        <property name="driverClass" value="${db.driverClass}"/>
         <property name="jdbcUrl" value="${db.jdbcUrl}"/>
         <property name="user" value="${db.user}"/>
         <property name="password" value="${db.password}"/>
+        <property name="maxPoolSize" value="${pool.maxPoolSize}"/>
+        <property name="minPoolSize" value="${pool.minPoolSize}"/>
+        <property name="initialPoolSize" value="${pool.initialPoolSize}"/>
+        <property name="maxIdleTime" value="${pool.maxIdleTime}"/>
     </bean>
 
-    <bean name="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
-        <property name="dataSource" ref="datasource"/>
+    <!--配置session工厂-->
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
         <property name="hibernateProperties">
             <props>
-                <prop key="hibernate.dialect" >org.hibernate.dialect.MySQLDialect</prop>
-                <prop key="hibernate.show_sql" >true</prop>
-                <prop key="hibernate.format_sql" >true</prop>
-                <prop key="hibernate.hbm2ddl.auto" >update</prop>
+                <prop key="hibernate.dialect">${hibernate.dialect}</prop>
+                <prop key="hibernate.show_sql">${hibernate.show_sql}</prop>
+                <prop key="hibernate.format_sql">${hibernate.format_sql}</prop>
+                <prop key="hibernate.hbm2ddl.auto" >${hibernate.hbm2ddl.auto}</prop>
             </props>
         </property>
-        <!-- 引入orm元数据,指定orm元数据所在的包路径,spring会自动读取包中的所有配置 -->
-        <property name="mappingDirectoryLocations" value="classpath:mapper" ></property>
     </bean>
 
+    <!-- 定义事务管理器 -->
+    <bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
 
-
+    <!-- 使用annotation定义事务 -->
+     <tx:annotation-driven transaction-manager="transactionManager"/>
 
     <!-- 引用各模块的spring配置文件，aop：xml版 -->
     <import resource="classpath*:spring/spring-*.xml" />
