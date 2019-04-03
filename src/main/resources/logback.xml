@@ -68,14 +68,15 @@
     </appender>
 
     <!-- 设置打印级别:TRACE, DEBUG, INFO, WARN, ERROR, ALL和OFF -->
-    <logger name="com.ljw.springmvc" additivity="false" level="DEBUG">
+    <logger name="com.ljw.springmvc" additivity="false" level="INFO">
         <appender-ref ref="STDOUT"/>
     </logger>
 
     <logger name="org.quartz" level="ERROR"/>
+    <logger name="com.mchange.v2" level="OFF"/>
 
     <!-- 日志输出级别 -->
-    <root level="DEBUG">
+    <root level="INFO">
         <appender-ref ref="STDOUT"/>
     </root>
 </configuration>

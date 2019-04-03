@@ -47,6 +47,12 @@
     <!--配置session工厂-->
     <bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
         <property name="dataSource" ref="dataSource"/>
+        <!-- hibernate自动扫描 实体类-->
+        <property name="packagesToScan">
+            <list>
+                <value>com.ljw.springmvc.pojo</value>
+            </list>
+        </property>
         <property name="hibernateProperties">
             <props>
                 <prop key="hibernate.dialect">${hibernate.dialect}</prop>
@@ -57,6 +63,10 @@
         </property>
     </bean>
 
+    <bean id="hibernateTemplate" class="org.springframework.orm.hibernate5.HibernateTemplate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
     <!-- 定义事务管理器 -->
     <bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
         <property name="sessionFactory" ref="sessionFactory" />
@@ -64,6 +74,7 @@
 
     <!-- 使用annotation定义事务 -->
      <tx:annotation-driven transaction-manager="transactionManager"/>
+
 
     <!-- 引用各模块的spring配置文件，aop：xml版 -->
     <import resource="classpath*:spring/spring-*.xml" />
