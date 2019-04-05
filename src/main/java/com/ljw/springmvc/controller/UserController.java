@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -24,6 +25,8 @@ public class UserController {
     @Autowired
     private IUserService userService;
 
+
+
     @GetMapping("/list")
     public ResponseEntity<List<User>> listUser(){
         List<User> dataList = userService.listUser();
@@ -34,7 +37,6 @@ public class UserController {
     }
 
     @GetMapping("/get/{id}")
-    @ResponseBody
     public ResponseEntity<User> getUser(@PathVariable("id") int id){
         User user = userService.getUser(id);
         if(user == null){

@@ -68,7 +68,7 @@
     </appender>
 
     <!-- 设置打印级别:TRACE, DEBUG, INFO, WARN, ERROR, ALL和OFF -->
-    <logger name="com.ljw.springmvc" additivity="false" level="INFO">
+    <logger name="com.ljw.springmvc" additivity="false" level="DEBUG">
         <appender-ref ref="STDOUT"/>
     </logger>
 

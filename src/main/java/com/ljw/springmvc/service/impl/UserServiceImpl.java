@@ -5,6 +5,7 @@ import com.ljw.springmvc.pojo.User;
 import com.ljw.springmvc.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -14,8 +15,8 @@ import java.util.List;
  * @Author: Administrator
  * @CreateDate: 2019/4/3 22:00
  */
-@Service("userService")
 @Transactional
+@Service("userService")
 public class UserServiceImpl implements IUserService {
 
     @Autowired
@@ -27,6 +28,7 @@ public class UserServiceImpl implements IUserService {
      * @return
      */
     @Override
+    @Transactional(readOnly = true,propagation = Propagation.SUPPORTS)
     public List<User> listUser() {
         return userDao.listUser();
     }
@@ -38,6 +40,7 @@ public class UserServiceImpl implements IUserService {
      * @return
      */
     @Override
+    @Transactional(readOnly = true,propagation = Propagation.SUPPORTS)
     public User getUser(int id) {
         return userDao.getUser(id);
     }
