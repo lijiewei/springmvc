@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- 指定数据源配置文件 -->
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:httpConfig.properties</value>
+            </list>
+        </property>
+    </bean>
+
+    <context:component-scan base-package="com.ljw.springmvc"/>
+
+    <!--使用httpclient的实现，带连接池-->
+    <bean id="pollingConnectionManager" class="org.apache.http.impl.conn.PoolingHttpClientConnectionManager">
+        <!--整个连接池的并发-->
+        <property name="maxTotal" value="${http.maxTotal}" />
+        <!--每个主机的并发-->
+        <property name="defaultMaxPerRoute" value="${http.defaultMaxPerRoute}" />
+    </bean>
+
+    <bean id="httpClientBuilder" class="org.apache.http.impl.client.HttpClientBuilder" factory-method="create">
+        <property name="connectionManager" ref="pollingConnectionManager" />
+        <!--开启重试-->
+        <property name="retryHandler">
+            <bean class="org.apache.http.impl.client.DefaultHttpRequestRetryHandler">
+                <constructor-arg value="2"/>
+                <constructor-arg value="true"/>
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="httpClient" factory-bean="httpClientBuilder" factory-method="build" />
+
+    <bean id="clientHttpRequestFactory" class="org.springframework.http.client.HttpComponentsClientHttpRequestFactory">
+        <constructor-arg ref="httpClient"/>
+        <!--连接超时时间，毫秒-->
+        <property name="connectTimeout" value="${http.connectTimeout}"/>
+        <!--读写超时时间，毫秒-->
+        <property name="readTimeout" value="${http.readTimeout}"/>
+    </bean>
+
+    <bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
+        <constructor-arg ref="clientHttpRequestFactory"/>
+    </bean>
+
+</beans>
+
+
+
+

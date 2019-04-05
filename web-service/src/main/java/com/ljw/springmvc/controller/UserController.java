@@ -55,12 +55,20 @@ public class UserController {
 
     @PutMapping("/update")
     public ResponseEntity<Void> updateUser(@RequestBody User user){
+        User temp = userService.getUser(user.getId());
+        if(temp == null){
+            return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+        }
         userService.updateUser(user);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable int id){
+        User temp = userService.getUser(id);
+        if(temp == null){
+            return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+        }
         userService.deleteUser(id);
         return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
     }

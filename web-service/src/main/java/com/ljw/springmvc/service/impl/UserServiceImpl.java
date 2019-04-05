@@ -4,6 +4,7 @@ import com.ljw.springmvc.dao.IUserDao;
 import com.ljw.springmvc.pojo.User;
 import com.ljw.springmvc.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
